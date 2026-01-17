@@ -1,0 +1,101 @@
+{
+    "training_info": {
+        "date": "2025-10-09 19:16:06",
+        "model_type": "Ridge Regression",
+        "alpha": 1.0,
+        "random_state": 42
+    },
+    "data_info": {
+        "total_observations": 543,
+        "train_size": 434,
+        "test_size": 109,
+        "n_features": 29,
+        "features_scaled": 10,
+        "features_binary": 0
+    },
+    "performance_metrics": {
+        "train": {
+            "r2": 0.9269810311088442,
+            "mae": 32729.96183201451,
+            "rmse": 44281.8698068469,
+            "mape": 10.574453092994185
+        },
+        "test": {
+            "r2": 0.8899735492191518,
+            "mae": 37482.411199274175,
+            "rmse": 59118.94464961415,
+            "mape": 11.274537430131927
+        }
+    },
+    "cross_validation": {
+        "n_folds": 5,
+        "mean_r2": 0.9201352273755006,
+        "std_r2": 0.00626078232045141,
+        "min_r2": 0.9106806349696587,
+        "max_r2": 0.9269494030860363,
+        "cv_scores": [
+            0.9106806349696587,
+            0.9265899333829218,
+            0.9205973692180774,
+            0.9269494030860363,
+            0.915858796220808
+        ]
+    },
+    "comparison": {
+        "ridge_r2_test": 0.8899735492191518,
+        "linear_r2_test": 0.8897264156541447,
+        "winner": "🏆 RIDGE REGRESSION"
+    },
+    "top_features": [
+        {
+            "feature": "age",
+            "coefficient": -130902.84882107512,
+            "abs_coefficient": 130902.84882107512
+        },
+        {
+            "feature": "condition_score",
+            "coefficient": -55323.94438750113,
+            "abs_coefficient": 55323.94438750113
+        },
+        {
+            "feature": "base_price_new",
+            "coefficient": 33170.13000397866,
+            "abs_coefficient": 33170.13000397866
+        },
+        {
+            "feature": "tonnage",
+            "coefficient": 31911.668182658716,
+            "abs_coefficient": 31911.668182658716
+        },
+        {
+            "feature": "condition_Wymaga naprawy",
+            "coefficient": -29122.108402590817,
+            "abs_coefficient": 29122.108402590817
+        },
+        {
+            "feature": "condition_Dobry",
+            "coefficient": 25322.3498821035,
+            "abs_coefficient": 25322.3498821035
+        },
+        {
+            "feature": "reach_m",
+            "coefficient": 23184.892278718828,
+            "abs_coefficient": 23184.892278718828
+        },
+        {
+            "feature": "engine_power_kw",
+            "coefficient": 22226.991780478897,
+            "abs_coefficient": 22226.991780478897
+        },
+        {
+            "feature": "full_service_history",
+            "coefficient": 22181.413709102344,
+            "abs_coefficient": 22181.413709102344
+        },
+        {
+            "feature": "major_repairs",
+            "coefficient": -20698.31035319023,
+            "abs_coefficient": 20698.31035319023
+        }
+    ]
+}
