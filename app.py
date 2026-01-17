@@ -259,27 +259,30 @@ st.info("💡 **Instrukcja:** Wypełnij formularz poniżej, wybierając parametr
 # FORMULARZ
 # ====================================================================
 
+# Model selection PRZED formularzem - aby się odświeżał dynamicznie
+st.markdown("#### 🏗️ Wybór modelu")
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    model_options = sorted(specs_df['model'].tolist())
+    selected_model = st.selectbox("Model maszyny Atlas", options=model_options, key="model_selector")
+
+model_spec = specs_df[specs_df['model'] == selected_model].iloc[0]
+
+with col2:
+    st.markdown("**Parametry techniczne:**")
+    st.caption(f"⚖️ Waga: {model_spec['tonnage']} ton")
+    st.caption(f"⚡ Moc: {model_spec['engine_power_kw']} kW")
+    st.caption(f"📏 Zasięg: {model_spec['reach_m']} m")
+    st.caption(f"💰 Cena nowa: {model_spec['base_price_new']:,} zł")
+    if model_spec['is_hybrid']:
+        st.success("🔋 Wersja hybrydowa")
+
+st.markdown("---")
+
+# Teraz formularz z resztą pól
 with st.form("valuation_form"):
-    st.subheader("📋 Formularz wyceny")
-    
-    # Model
-    st.markdown("#### 🏗️ Wybór modelu")
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        model_options = sorted(specs_df['model'].tolist())
-        selected_model = st.selectbox("Model maszyny Atlas", options=model_options)
-    
-    model_spec = specs_df[specs_df['model'] == selected_model].iloc[0]
-    
-    with col2:
-        st.markdown("**Parametry techniczne:**")
-        st.caption(f"⚖️ Waga: {model_spec['tonnage']} ton")
-        st.caption(f"⚡ Moc: {model_spec['engine_power_kw']} kW")
-        st.caption(f"📏 Zasięg: {model_spec['reach_m']} m")
-        st.caption(f"💰 Cena nowa: {model_spec['base_price_new']:,} zł")
-        if model_spec['is_hybrid']:
-            st.success("🔋 Wersja hybrydowa")
+    st.subheader("📋 Szczegóły wyceny")
     
     st.markdown("---")
     
