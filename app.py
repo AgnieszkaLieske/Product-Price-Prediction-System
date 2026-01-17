@@ -8,11 +8,11 @@ import os
 from pathlib import Path
 
 # ====================================================================
-# KONFIGURACJA ŚCIEŻEK 
+# KONFIGURACJA ŚCIEŻEK - DLA STRUKTURY: app.py w katalogu głównym
 # ====================================================================
 
-# Automatyczne wykrywanie ścieżki bazowej
-BASE_DIR = Path(__file__).parent.parent if '__file__' in globals() else Path('.')
+# Katalog główny to tam gdzie jest app.py
+BASE_DIR = Path(__file__).parent if '__file__' in globals() else Path('.')
 MODELS_DIR = BASE_DIR / 'models'
 DATA_DIR = BASE_DIR / 'data'
 
@@ -64,12 +64,18 @@ st.markdown("""
 
 @st.cache_resource
 def load_model_components():
-    """Wczytaj model, scaler i feature names - POPRAWIONE ŚCIEŻKI"""
+    """Wczytaj model, scaler i feature names"""
     try:
-        # Debug - pokaż gdzie szukamy
-        st.sidebar.caption(f"🔍 Szukam modeli w: {MODELS_DIR}")
+        # Debug info
+        st.sidebar.caption(f"📂 BASE_DIR: {BASE_DIR}")
+        st.sidebar.caption(f"📂 MODELS_DIR: {MODELS_DIR}")
+        st.sidebar.caption(f"✅ Katalog istnieje: {MODELS_DIR.exists()}")
         
-        with open(MODELS_DIR / 'model_ridge.pkl', 'rb') as f:
+        model_path = MODELS_DIR / 'model_ridge.pkl'
+        st.sidebar.caption(f"🔍 Szukam: {model_path}")
+        st.sidebar.caption(f"✅ Plik istnieje: {model_path.exists()}")
+        
+        with open(model_path, 'rb') as f:
             model = pickle.load(f)
         with open(MODELS_DIR / 'scaler.pkl', 'rb') as f:
             scaler = pickle.load(f)
@@ -84,6 +90,7 @@ def load_model_components():
         except:
             metrics = None
         
+        st.sidebar.success("✅ Model załadowany!")
         return model, scaler, feature_names, features_to_scale, metrics
     
     except FileNotFoundError as e:
@@ -91,55 +98,76 @@ def load_model_components():
         st.error(f"Szukano w: `{MODELS_DIR}`")
         st.error(f"Szczegóły: {e}")
         
-        # Pokaż strukturę katalogów
-        with st.expander("🔍 Sprawdź strukturę plików w repozytorium"):
-            st.code(f"Obecny katalog: {os.getcwd()}")
+        # Szczegółowa diagnostyka
+        with st.expander("🔍 Sprawdź strukturę plików w repozytorium", expanded=True):
+            st.code(f"Obecny katalog roboczy: {os.getcwd()}")
+            st.code(f"__file__: {__file__ if '__file__' in globals() else 'BRAK'}")
             st.code(f"BASE_DIR: {BASE_DIR}")
             st.code(f"MODELS_DIR: {MODELS_DIR}")
+            st.code(f"MODELS_DIR.exists(): {MODELS_DIR.exists()}")
             
-            st.markdown("**Pliki w katalogu głównym:**")
-            for item in Path('.').iterdir():
-                st.text(f"  {'📁' if item.is_dir() else '📄'} {item.name}")
+            st.markdown("**📁 Pliki w katalogu głównym:**")
+            try:
+                for item in sorted(BASE_DIR.iterdir()):
+                    icon = "📁" if item.is_dir() else "📄"
+                    st.text(f"{icon} {item.name}")
+            except Exception as ex:
+                st.error(f"Nie można odczytać katalogu: {ex}")
             
             if MODELS_DIR.exists():
-                st.markdown(f"**Pliki w {MODELS_DIR}:**")
-                for item in MODELS_DIR.iterdir():
-                    st.text(f"  📄 {item.name}")
+                st.markdown(f"**📁 Pliki w {MODELS_DIR.name}/:**")
+                try:
+                    for item in sorted(MODELS_DIR.iterdir()):
+                        size = item.stat().st_size / 1024 / 1024  # MB
+                        st.text(f"📄 {item.name} ({size:.2f} MB)")
+                except Exception as ex:
+                    st.error(f"Błąd odczytu: {ex}")
             else:
-                st.warning(f"❌ Katalog `{MODELS_DIR}` nie istnieje!")
+                st.error(f"❌ Katalog `{MODELS_DIR}` NIE ISTNIEJE!")
+                st.markdown("**Możliwe przyczyny:**")
+                st.markdown("- Katalog `models/` nie został dodany do repo GitHub")
+                st.markdown("- Pliki `.pkl` są w `.gitignore`")
+                st.markdown("- Nie wykonano `git push` po dodaniu plików")
         
         st.info("""
-        **Co zrobić?**
+        **🔧 Co zrobić?**
         
-        1️⃣ Upewnij się, że katalog `models/` jest w repozytorium GitHub
-        2️⃣ Sprawdź czy zawiera pliki:
-           - model_ridge.pkl
-           - scaler.pkl
-           - feature_names.pkl
-           - features_to_scale.pkl
-           - training_metrics.json (opcjonalny)
-        
-        3️⃣ Struktura powinna wyglądać tak:
+        1️⃣ Sprawdź na GitHub czy folder `models/` jest widoczny
+        2️⃣ Kliknij w folder - czy widzisz pliki .pkl?
+        3️⃣ Jeśli NIE, wykonaj lokalnie:
+        ```bash
+        git add -f models/*.pkl
+        git commit -m "Add model files"
+        git push
         ```
-        repo/
-        ├── models/          ← TEN KATALOG
-        │   ├── model_ridge.pkl
-        │   └── ...
-        ├── data/
-        │   └── material_handlers_specs.csv
-        └── streamlit_app.py (lub app/streamlit_app.py)
-        ```
+        4️⃣ Poczekaj ~30 sek i odśwież aplikację
         """)
+        st.stop()
+    
+    except Exception as e:
+        st.error(f"❌ Inny błąd: {e}")
+        st.exception(e)
         st.stop()
 
 @st.cache_data
 def load_specs():
-    """Wczytaj specyfikacje modeli - POPRAWIONE ŚCIEŻKI"""
+    """Wczytaj specyfikacje modeli"""
     try:
-        specs = pd.read_csv(DATA_DIR / 'material_handlers_specs.csv')
+        specs_path = DATA_DIR / 'material_handlers_specs.csv'
+        specs = pd.read_csv(specs_path)
         return specs
     except FileNotFoundError:
         st.error(f"❌ Nie znaleziono: `{DATA_DIR / 'material_handlers_specs.csv'}`")
+        
+        with st.expander("🔍 Debug - pliki w data/"):
+            if DATA_DIR.exists():
+                for item in DATA_DIR.iterdir():
+                    st.text(f"📄 {item.name}")
+            else:
+                st.error(f"Katalog {DATA_DIR} nie istnieje!")
+        st.stop()
+    except Exception as e:
+        st.error(f"❌ Błąd wczytywania CSV: {e}")
         st.stop()
 
 def calculate_age(year, current_year=2025):
@@ -339,6 +367,7 @@ if submitted:
             # Wyświetlenie
             st.markdown(f'<div class="price-display">{predicted_price:,.0f} PLN</div>', unsafe_allow_html=True)
             
+            st.markdown("### 📈 Szczegóły wyceny")
             col_m1, col_m2, col_m3 = st.columns(3)
             
             with col_m1:
