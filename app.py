@@ -21,8 +21,8 @@ DATA_DIR = BASE_DIR / 'data'
 # ====================================================================
 
 st.set_page_config(
-    page_title="Atlas - Wycena Maszyn",
-    page_icon="🏗️",
+    page_title="Wycena Maszyn",
+    page_icon="💰",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -238,8 +238,8 @@ specs_df = load_specs()
 # NAGŁÓWEK
 # ====================================================================
 
-st.markdown('<div class="main-header">🏗️ Atlas Poland - Wycena Maszyn</div>', unsafe_allow_html=True)
-st.markdown("### 🤖 System AI do automatycznej wyceny maszyn używanych")
+st.markdown('<div class="main-header">💰 System Wyceny Maszyn Przeładunkowych</div>', unsafe_allow_html=True)
+st.markdown("### 🤖 Automatyczna wycena maszyn używanych")
 
 if metrics:
     col1, col2, col3, col4 = st.columns(4)
